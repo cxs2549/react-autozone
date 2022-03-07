@@ -1,15 +1,15 @@
 import { useState, useRef } from "react"
+import { CSSTransition } from "react-transition-group"
 import styled from "styled-components"
 import tw from "twin.macro"
 import { BsBag } from "react-icons/bs"
 import { BiSearch } from "react-icons/bi"
 import { AiOutlineRight, AiOutlineLeft } from "react-icons/ai"
 import Hamburger from "hamburger-react"
-import { CSSTransition } from "react-transition-group"
 import useOnClickOutside from "use-onclickoutside"
 
 const StyledNavbar = styled.header`
-  ${tw`h-16`}
+  ${tw`h-16`};
   a:not(:first-child) {
     height: 48px;
     width: 48px;
@@ -20,10 +20,13 @@ const StyledNavbar = styled.header`
     ${tw`text-[24px] font-medium`}
   }
   h3 {
-    ${tw`font-medium text-[16px]`}
+    ${tw`font-semibold text-[16px]`}
   }
   li h3 {
     color: var(--text-3);
+  }
+  svg {
+    color: var(--text-1);
   }
   #burgerMenu {
     background-color: var(--surface-1);
@@ -31,6 +34,13 @@ const StyledNavbar = styled.header`
   @media (prefers-color-scheme: dark) {
     img {
       filter: invert(1);
+    }
+    a,
+    #hamburger,
+    #menuItem {
+      &:hover {
+        background-color: var(--surface-3);
+      }
     }
   }
 
@@ -84,7 +94,7 @@ const Logo = () => (
 const Bag = () => (
   <a
     href="/cart"
-    className="mr-2  hover:bg-gray-200 rounded-full p-2 transition-colors duration-200"
+    className="mr-2 hover:bg-gray-200 rounded-full p-2 transition-colors duration-200"
   >
     <BsBag className="w-7 h-7" />
   </a>
@@ -100,19 +110,20 @@ const Search = () => (
 const Burger = () => {
   const [open, setOpen] = useState(false)
   const ref = useRef()
+
   useOnClickOutside(ref, () => setOpen(false))
 
-  const MainItem = ({ title, subtitle, list }) => {
+  const MenuItem = ({ title, subtitles }) => {
     const [open, setOpen] = useState(false)
-    const [openSub, setOpenSub] = useState(false)
     return (
       <div>
         <div
+          id="menuItem"
           onClick={() => setOpen(!open)}
-          className="flex items-center justify-between  h-16 px-5 z-10 cursor-pointer"
+          className="flex items-center justify-between  h-14 px-5 z-10 cursor-pointer hover:bg-gray-200"
         >
           <h1 className="text-[24px] font-medium">{title}</h1>
-          <AiOutlineRight className="w-6 h-6" />
+          <AiOutlineRight className="w-5 h-5" />
         </div>
         <CSSTransition
           in={open}
@@ -120,56 +131,34 @@ const Burger = () => {
           classNames="my-node"
           unmountOnExit
         >
-          <div id="burgerMenu" className="fixed top-[64px] w-[75%] right-0 h-screen bg-white z-10">
+          <div
+            id="burgerMenu"
+            className="fixed top-[64px] w-[75%] right-0 h-screen bg-white z-10"
+          >
             <div
+              id="menuItem"
               onClick={() => setOpen(!open)}
-              className="flex items-center gap-3  h-16 px-5 z-10 cursor-pointer"
+              className="flex items-center gap-3  h-10 px-5 z-10 cursor-pointer hover:bg-gray-200"
             >
-              <AiOutlineLeft className="w-6 h-6" />
+              <AiOutlineLeft className="w-4 h-4" />
               <h3>All</h3>
             </div>
             <div>
               <h1 className="p-5">{title}</h1>
             </div>
             <ul>
-              <li className="  h-10 px-5">
-                <div
-                  onClick={() => setOpenSub(!openSub)}
-                  className="flex items-center justify-between h-full cursor-pointer"
-                >
-                  <h3>{subtitle}</h3>
-                  <AiOutlineRight className="w-6 h-6" />
+              <div>
+                <div className="h-8 ">
+                  {subtitles.map((subtitle, index) => (
+                    <SubMenuItem
+                      title={title}
+                      subtitle={subtitle.subtitle}
+                      links={subtitle.links}
+                      soloLinks={subtitle.soloLinks}
+                    />
+                  ))}
                 </div>
-                <CSSTransition
-                  in={openSub}
-                  timeout={300}
-                  classNames="my-node"
-                  unmountOnExit
-                >
-                  <div id="burgerMenu" className="fixed top-[64px] w-[75%] right-0 h-screen bg-white z-10">
-                    <div
-                      onClick={() => setOpenSub(!openSub)}
-                      className="flex items-center gap-3  h-16 px-4 z-10 cursor-pointer"
-                    >
-                      <AiOutlineLeft className="w-6 h-6" />
-                      <h3>{title}</h3>
-                    </div>
-                    <div>
-                      <h1 className="p-5">{subtitle}</h1>
-                    </div>
-                    <ul>
-                      {list.map((item, index) => (
-                        <li
-                          key={index}
-                          className=" px-5 capitalize h-10 flex items-center cursor-pointer"
-                        >
-                          <h3>{item}</h3>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </CSSTransition>
-              </li>
+              </div>
             </ul>
           </div>
         </CSSTransition>
@@ -177,17 +166,214 @@ const Burger = () => {
     )
   }
 
-  const mens = ["shoes", "clothing", "equipment", "shop all new"]
+  const SubMenuItem = ({ title, subtitle, links, soloLinks }) => {
+    const [open, setOpen] = useState(false)
+    return (
+      <div>
+        {!soloLinks && (
+          <div
+            id="menuItem"
+            onClick={() => setOpen(!open)}
+            className="flex items-center justify-between  h-8 px-5 z-10 cursor-pointer hover:bg-gray-200 opacity-70"
+          >
+            <h3>{subtitle}</h3>
+            <AiOutlineRight className="w-4 h-4" />
+          </div>
+        )}
+        {soloLinks && (
+          <div>
+            {soloLinks.map((link) => (
+              <div
+                id="menuItem"
+                className="h-8 flex items-center px-5 z-10 cursor-pointer capitalize hover:bg-gray-200 opacity-70"
+              >
+                <h3>{link}</h3>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <CSSTransition
+          in={open}
+          timeout={300}
+          classNames="my-node"
+          unmountOnExit
+        >
+          <div
+            id="burgerMenu"
+            className="fixed top-[64px] w-[75%] right-0 h-screen bg-white z-10"
+          >
+            <div
+              id="menuItem"
+              onClick={() => setOpen(!open)}
+              className="flex items-center gap-3  h-10 px-5 z-10 cursor-pointer hover:bg-gray-200"
+            >
+              <AiOutlineLeft className="w-4 h-4" />
+              <h3>{title}</h3>
+            </div>
+            <div>
+              <h1 className="p-5">{subtitle && subtitle}</h1>
+            </div>
+            <ul>
+              {links &&
+                links.map((link, index) => (
+                  <div
+                    id="menuItem"
+                    key={index}
+                    className="cursor-pointer h-8 hover:bg-gray-200  flex items-center px-5 capitalize opacity-70"
+                  >
+                    <h3>{link}</h3>
+                  </div>
+                ))}
+            </ul>
+          </div>
+        </CSSTransition>
+      </div>
+    )
+  }
+
+  const menuItems = [
+    {
+      title: "New Releases",
+      subtitles: [
+        {
+          subtitle: "New For Men",
+          links: ["shoes", "clothing", "equipment", "shop all new"],
+        },
+        {
+          subtitle: "New For Women",
+          links: ["shoes", "clothing", "equipment", "shop all new"],
+        },
+      ],
+    },
+    {
+      title: "Men",
+      subtitles: [
+        {
+          subtitle: "New & Featured",
+          links: [
+            "new releases",
+            "best sellers",
+            "best of Air Force",
+            "vacation vibes",
+            "style your air",
+            "sale - up to 40% off",
+          ],
+        },
+        {
+          soloLinks: [
+            "shoes",
+            "tops & t-shirts",
+            "shorts",
+            "hoodies & sweatshirts",
+            "pants & tights",
+            "sale - up to 40% off",
+          ],
+        },
+      ],
+    },
+    {
+      title: "Women",
+      subtitles: [
+        {
+          subtitle: "New & Featured",
+          links: [
+            "new releases",
+            "best sellers",
+            "best of Air Force",
+            "vacation vibes",
+            "style your air",
+            "sale - up to 40% off",
+          ],
+        },
+        {
+          soloLinks: [
+            "shoes",
+            "tops & t-shirts",
+            "shorts",
+            "hoodies & sweatshirts",
+            "pants & tights",
+            "sale - up to 40% off",
+          ],
+        },
+      ],
+    },
+    {
+      title: "Kids",
+      subtitles: [
+        {
+          subtitle: "New & Featured",
+          links: [
+            "new releases",
+            "best sellers",
+            "best of Air Force",
+            "vacation vibes",
+            "style your air",
+            "sale - up to 40% off",
+          ],
+        },
+        {
+          soloLinks: [
+            "shoes",
+            "tops & t-shirts",
+            "shorts",
+            "hoodies & sweatshirts",
+            "pants & tights",
+            "sale - up to 40% off",
+          ],
+        },
+      ],
+    },
+    {
+      title: "Sale",
+      subtitles: [
+        {
+          subtitle: "New & Featured",
+          links: [
+            "new releases",
+            "best sellers",
+            "best of Air Force",
+            "vacation vibes",
+            "style your air",
+            "sale - up to 40% off",
+          ],
+        },
+        {
+          soloLinks: [
+            "shoes",
+            "tops & t-shirts",
+            "shorts",
+            "hoodies & sweatshirts",
+            "pants & tights",
+            "sale - up to 40% off",
+          ],
+        },
+      ],
+    },
+  ]
 
   return (
     <div ref={ref}>
-      <div className="translate-x-2  hover:bg-gray-200 rounded-full transition-colors duration-200">
+      <div
+        id="hamburger"
+        className="translate-x-2  hover:bg-gray-200 rounded-full transition-colors duration-200"
+      >
         <Hamburger toggle={setOpen} toggled={open} size={22} />
       </div>
       {/* menu */}
       <CSSTransition in={open} timeout={300} classNames="my-node" unmountOnExit>
-        <div id="burgerMenu" className="fixed top-[64px] w-[75%] right-0 h-screen  z-10">
-          <MainItem title="New Releases" subtitle="New For Men" list={mens} />
+        <div
+          id="burgerMenu"
+          className="fixed top-[64px] w-[75%] right-0 h-screen  z-10"
+        >
+          {/* <MainItem title="New Releases" subtitle="New For Men" list={mens} /> */}
+          {menuItems.map((item, index) => (
+            <MenuItem
+              key={index}
+              title={item.title}
+              subtitles={item.subtitles}
+            />
+          ))}
         </div>
       </CSSTransition>
       {/* overlay */}
