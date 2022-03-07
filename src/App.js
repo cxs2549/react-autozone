@@ -4,6 +4,7 @@ const App = () => {
   return (
     <div>
       <Navbar />
+      <img src="http://unsplash.it/500/500?random&gravity=center" alt="logo" />
     </div>
   )
 }
