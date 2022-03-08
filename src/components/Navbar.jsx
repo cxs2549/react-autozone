@@ -35,7 +35,7 @@ const StyledNavbar = styled.header`
     img {
       filter: invert(1);
     }
-    a,
+    a:not(:first-child),
     #hamburger,
     #menuItem {
       &:hover {
@@ -120,7 +120,7 @@ const Burger = () => {
         <div
           id="menuItem"
           onClick={() => setOpen(!open)}
-          className="flex items-center justify-between  h-14 px-5 z-10 cursor-pointer hover:bg-gray-200"
+          className="flex items-center justify-between  h-12 px-5 z-10 cursor-pointer hover:bg-gray-200"
         >
           <h1 className="text-[24px] font-medium">{title}</h1>
           <AiOutlineRight className="w-5 h-5" />
@@ -165,7 +165,6 @@ const Burger = () => {
       </div>
     )
   }
-
   const SubMenuItem = ({ title, subtitle, links, soloLinks }) => {
     const [open, setOpen] = useState(false)
     return (
@@ -231,7 +230,6 @@ const Burger = () => {
       </div>
     )
   }
-
   const menuItems = [
     {
       title: "New Releases",
@@ -351,6 +349,23 @@ const Burger = () => {
       ],
     },
   ]
+  const BrandLink = ({ image, imageSize, brand }) => {
+    return (
+      <div
+        id="menuItem"
+        className="flex items-center gap-1 px-3 hover:bg-gray-200 h-12 cursor-pointer"
+      >
+        <div className="w-14 grid place-items-center">
+          <img
+            src={image}
+            alt="brand"
+            className={`${imageSize ? imageSize : "w-8"}`}
+          />
+        </div>
+        <h3>{brand}</h3>
+      </div>
+    )
+  }
 
   return (
     <div ref={ref}>
@@ -360,13 +375,13 @@ const Burger = () => {
       >
         <Hamburger toggle={setOpen} toggled={open} size={22} />
       </div>
-      {/* menu */}
       <CSSTransition in={open} timeout={300} classNames="my-node" unmountOnExit>
+        {/* Menu */}
         <div
           id="burgerMenu"
           className="fixed top-[64px] w-[75%] right-0 h-screen  z-10"
         >
-          {/* <MainItem title="New Releases" subtitle="New For Men" list={mens} /> */}
+          {/* Menu Items */}
           {menuItems.map((item, index) => (
             <MenuItem
               key={index}
@@ -374,6 +389,21 @@ const Burger = () => {
               subtitles={item.subtitles}
             />
           ))}
+          {/* SNKRS Calendar Link */}
+          <div
+            id="menuItem"
+            onClick={() => setOpen(!open)}
+            className="flex items-center justify-between  h-12 px-5 z-10 cursor-pointer mb-9 hover:bg-gray-200"
+          >
+            <h1 className="text-[24px] font-medium">SNKRS Calendar</h1>
+          </div>
+          {/* Brands */}
+          <BrandLink image="/images/jordan.png" brand="Jordan" />
+          <BrandLink
+            image="/images/converse.png"
+            imageSize="w-13"
+            brand="Converse"
+          />
         </div>
       </CSSTransition>
       {/* overlay */}
