@@ -3,8 +3,9 @@ import { CSSTransition } from "react-transition-group"
 import styled from "styled-components"
 import tw from "twin.macro"
 import { BsBag } from "react-icons/bs"
-import { BiSearch } from "react-icons/bi"
+import { BiSearch, BiHelpCircle } from "react-icons/bi"
 import { AiOutlineRight, AiOutlineLeft } from "react-icons/ai"
+import { GiCardboardBoxClosed } from "react-icons/gi"
 import Hamburger from "hamburger-react"
 import useOnClickOutside from "use-onclickoutside"
 
@@ -22,14 +23,20 @@ const StyledNavbar = styled.header`
   h3 {
     ${tw`font-semibold text-[16px]`}
   }
-  li h3 {
+  li h3,
+  p {
     color: var(--text-3);
+  }
+  span {
+    color: var(--text-1);
   }
   svg {
     color: var(--text-1);
   }
   #burgerMenu {
     background-color: var(--surface-1);
+    height: calc(100vh - 64px);
+    padding-bottom: 1rem;
   }
   @media (prefers-color-scheme: dark) {
     img {
@@ -67,11 +74,11 @@ const StyledNavbar = styled.header`
     opacity: 0;
   }
   .overlay-enter-active {
-    opacity: 0.4;
+    opacity: 0.6;
     transition: opacity 200ms;
   }
   .overlay-exit {
-    opacity: 0.4;
+    opacity: 0.6;
   }
   .overlay-exit-active {
     opacity: 0;
@@ -111,7 +118,16 @@ const Burger = () => {
   const [open, setOpen] = useState(false)
   const ref = useRef()
 
-  useOnClickOutside(ref, () => setOpen(false))
+  const handleOpen = () => {
+    setOpen(!open)
+    document.body.classList.add('no-flow')
+  }
+  const handleClose = () => {
+    setOpen(false)
+    document.body.classList.remove('no-flow')
+  }
+
+  useOnClickOutside(ref, handleClose)
 
   const MenuItem = ({ title, subtitles }) => {
     const [open, setOpen] = useState(false)
@@ -369,17 +385,18 @@ const Burger = () => {
 
   return (
     <div ref={ref}>
+      {/* hamburger */}
       <div
         id="hamburger"
         className="translate-x-2  hover:bg-gray-200 rounded-full transition-colors duration-200"
       >
-        <Hamburger toggle={setOpen} toggled={open} size={22} />
+        <Hamburger toggle={handleOpen} toggled={open} size={22} />
       </div>
       <CSSTransition in={open} timeout={300} classNames="my-node" unmountOnExit>
         {/* Menu */}
         <div
           id="burgerMenu"
-          className="fixed top-[64px] w-[75%] right-0 h-screen  z-10"
+          className="fixed top-[64px] w-[75%] right-0 h-screen  z-10 overflow-y-scroll "
         >
           {/* Menu Items */}
           {menuItems.map((item, index) => (
@@ -393,7 +410,7 @@ const Burger = () => {
           <div
             id="menuItem"
             onClick={() => setOpen(!open)}
-            className="flex items-center justify-between  h-12 px-5 z-10 cursor-pointer mb-9 hover:bg-gray-200"
+            className="flex items-center justify-between  h-12 px-5 z-10 cursor-pointer mb-5 hover:bg-gray-200"
           >
             <h1 className="text-[24px] font-medium">SNKRS Calendar</h1>
           </div>
@@ -404,13 +421,48 @@ const Burger = () => {
             imageSize="w-13"
             brand="Converse"
           />
+          {/* Nike Member Signup */}
+          <div className=" px-5 mt-8">
+            <div className="flex flex-col">
+              <p className="text-[20px] leading-[24px] font-medium text-[#757575] opacity-80">
+                Become a Nike Member for the best products, inspiration and
+                stories in sport.
+              </p>
+              <span className="text-[20px] leading-[24px] font-medium">
+                Learn More
+              </span>
+            </div>
+            <div className="flex gap-2 mt-8">
+              <button className="rounded-full bg-black text-white px-5 h-10 font-medium">
+                Join Us
+              </button>
+              <button className="rounded-full bg-white text-black border-2 border-gray-300 px-5 h-[38px] font-medium">
+                Sign In
+              </button>
+            </div>
+          </div>
+          {/* Bottom Links */}
+          <div className="mt-8">
+            <div className="flex items-center">
+              <div className="w-14 grid place-items-center">
+                <GiCardboardBoxClosed size={30} />
+              </div>
+              <h3>Orders</h3>
+            </div>
+            <div className="flex items-center mt-4">
+              <div className="w-14 grid place-items-center">
+                <BiHelpCircle size={30} />
+              </div>
+              <h3>Help</h3>
+            </div>
+          </div>
         </div>
       </CSSTransition>
       {/* overlay */}
       <CSSTransition in={open} timeout={200} classNames="overlay" unmountOnExit>
         <div
-          onClick={() => setOpen(false)}
-          className="fixed top-[64px] w-full opacity-40 right-0 h-screen bg-black"
+          onClick={handleClose}
+          className="fixed top-[64px] w-full opacity-60 right-0 h-screen bg-black"
         ></div>
       </CSSTransition>
     </div>
